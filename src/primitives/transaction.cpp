@@ -11,7 +11,8 @@
 
 std::string COutPoint::ToString() const
 {
-    return strprintf("COutPoint(%s, %u)", hash.ToString().substr(0,10), n);
+    //By hxywtc*** return strprintf("COutPoint(%s, %u)", hash.ToString().substr(0,10), n);
+    return strprintf("COutPoint(%s, %u)", hash.ToString(), n);
 }
 
 CTxIn::CTxIn(COutPoint prevoutIn, CScript scriptSigIn, uint32_t nSequenceIn)
@@ -30,6 +31,7 @@ CTxIn::CTxIn(uint256 hashPrevTx, uint32_t nOut, CScript scriptSigIn, uint32_t nS
 
 std::string CTxIn::ToString() const
 {
+    /*By hxywtc***
     std::string str;
     str += "CTxIn(";
     str += prevout.ToString();
@@ -41,6 +43,15 @@ std::string CTxIn::ToString() const
         str += strprintf(", nSequence=%u", nSequence);
     str += ")";
     return str;
+    */
+    std::string str;
+    str += "CTxIn(";
+    str += prevout.ToString();
+    if (prevout.IsNull())
+        str += strprintf(", coinbase");
+    str += ")";
+    return str;
+
 }
 
 CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn)
@@ -51,7 +62,8 @@ CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn)
 
 std::string CTxOut::ToString() const
 {
-    return strprintf("CTxOut(nValue=%d.%08d, scriptPubKey=%s)", nValue / COIN, nValue % COIN, HexStr(scriptPubKey).substr(0, 30));
+    //By hxywtc*** return strprintf("CTxOut(nValue=%d.%08d, scriptPubKey=%s)", nValue / COIN, nValue % COIN, HexStr(scriptPubKey).substr(0, 30));
+    return strprintf("CTxOut(nValue=%d.%08d)", nValue / COIN, nValue % COIN);
 }
 
 CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0) {}
@@ -98,6 +110,7 @@ unsigned int CTransaction::GetTotalSize() const
 
 std::string CTransaction::ToString() const
 {
+    /*By hxywtc***
     std::string str;
     str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
         GetHash().ToString().substr(0,10),
@@ -109,6 +122,21 @@ std::string CTransaction::ToString() const
         str += "    " + tx_in.ToString() + "\n";
     for (const auto& tx_in : vin)
         str += "    " + tx_in.scriptWitness.ToString() + "\n";
+    for (const auto& tx_out : vout)
+        str += "    " + tx_out.ToString() + "\n";
+    return str;
+    */
+    std::string str;
+    str += strprintf("CTransaction(hash=%s, vin.size=%u, vout.size=%u)\n",
+        GetHash().ToString(),
+        vin.size(),
+        vout.size());
+    for (const auto& tx_in : vin)
+        str += "    " + tx_in.ToString() + "\n";
+    /*By hxywtc***
+    for (const auto& tx_in : vin)
+        str += "    " + tx_in.scriptWitness.ToString() + "\n";
+    */
     for (const auto& tx_out : vout)
         str += "    " + tx_out.ToString() + "\n";
     return str;
